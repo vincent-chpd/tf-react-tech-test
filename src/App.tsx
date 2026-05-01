@@ -61,7 +61,9 @@ function App() {
           onChange={(e) => setNewTaskTitle(e.target.value)}
           placeholder="Add a new task..."
         />
-        <button onClick={handleAddTask}>Add</button>
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleAddTask}>
+          Add
+        </button>
       </div>
 
       {/* TODO: Style this list — make it your own! */}
