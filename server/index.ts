@@ -37,8 +37,31 @@ let tasks: Task[] = [];
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
 // GET /api/tasks — return all tasks
-app.get('/api/tasks', (_req: Request, res: Response) => {
-  res.json(tasks);
+app.get('/api/tasks', (req: Request, res: Response) => {
+  const { priority, completed } = req.query;
+
+  if (priority !== undefined && priority !== 'low' && priority !== 'medium' && priority !== 'high') {
+    res.status(400).json({ error: 'Priority must be low, medium, or high.' });
+    return;
+  }
+
+  if (completed !== undefined && completed !== 'true' && completed !== 'false') {
+    res.status(400).json({ error: 'Completed must be true or false.' });
+    return;
+  }
+
+  let filteredTasks = tasks;
+
+  if (priority) {
+    filteredTasks = filteredTasks.filter(task => task.priority === priority);
+  }
+
+  if (completed !== undefined) {
+    const completedBoolean = completed === 'true';
+    filteredTasks = filteredTasks.filter(task => task.completed === completedBoolean);
+  }
+
+  res.json(filteredTasks);
 });
 
 // POST /api/tasks — create a new task

@@ -16,7 +16,7 @@ function App() {
   useEffect(() => {
     void (async () => {
       try {
-        const data = await getTasks();
+        const data = await getTasks({priority: undefined, completed: undefined});
         setTasks(data);
       } catch {
         setError('Failed to load tasks');

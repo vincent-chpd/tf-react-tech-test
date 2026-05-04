@@ -15,9 +15,17 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export const getTasks = async (): Promise<Task[]> => {
-  const res = await fetch(`${BASE_URL}/tasks`);
-  return handleResponse<Task[]>(res);
+export const getTasks = async ({ priority, completed }: { priority?: string; completed?: boolean }): Promise<Task[]> => {
+  const params = new URLSearchParams();
+
+  if (priority) params.append('priority', priority);
+  if (completed !== undefined) params.append('completed', String(completed));
+
+  const urlWithParams = `${BASE_URL}/tasks?${params.toString()}`;
+
+  const resWithParams = await fetch(urlWithParams);
+
+  return handleResponse<Task[]>(resWithParams);
 };
 
 export const createTask = async (task: NewTask): Promise<Task> => {
