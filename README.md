@@ -1,140 +1,61 @@
-# 🧪 JavaScript Developer Technical Test
+## Notes on Implementation 🚀
 
-**Estimated Time:** ~2 hours  
-**Stack:** React · TypeScript · Node.js · Express.js  
-**Node Version:** 22.22.0 (see `.nvmrc`)
+### 🛠️ Initial Setup
 
----
+I initially ran into an issue getting the project to run locally where the `index.html` file was inside the `public` folder rather than at the root of the project, which caused problems with the Vite setup. I moved it to the root directory and that seemed to fix this. I'm not sure if this was intentional as part of the test or just a small oversight, but I thought it's worth flagging just in case 👀
 
-## 👋 Welcome
-
-This test is designed to give you a chance to show us how you think and build. There are no trick questions — we're genuinely interested in how you approach problems, how you structure your code, and how you handle the unexpected. Feel free to be creative!
+To move a bit faster, I added Tailwind CSS and HeadlessUI for styling and accessible UI primitives (modals, form fields, buttons). I remember you (Jonny) mentioning that you guy also using Tailwind so I hope this isn't an issue!
 
 ---
 
-## 📋 What You'll Be Building
+### ⚙️ Backend
 
-A simple **Task Manager App** — a full-stack mini application with a React/TypeScript frontend and a Node.js/Express backend.
+I started with the backend and I have implemented:
 
-Don't worry about making it look beautiful (though that's a bonus!) — we care more about how your code works and how you've structured it.
+* A `priority` field (low, medium, high)
+* A `dueDate` field stored as an ISO string, with format validation on input
+* Query parameters for filtering tasks (`?priority=high`, `?completed=true`, `?dueDate=...`), with all filter values validated before use
+* Improved input validation, all returning `400` with descriptive error messages
 
----
-
-## 🗂 Project Structure
-
-```
-tf-react-tech-test/
-├── src/
-│   ├── App.tsx              ← Main React component — start here for the frontend
-│   ├── types.ts             ← Shared TypeScript types — extend these as needed
-│   ├── api.ts               ← API helper functions — already wired up
-│   └── main.tsx             ← React entry point (no changes needed)
-├── server/
-│   └── index.ts             ← Express server — start here for the backend
-├── public/
-│   └── index.html
-├── tsconfig.app.json        ← TypeScript config for the frontend
-├── tsconfig.server.json     ← TypeScript config for the backend
-├── package.json
-├── .nvmrc                   ← Node version (22.22.0)
-└── README.md
-```
+I did spend a bit more time on the backend than I probably should have. It’s not something I work with every day in my current role, so backend filtering somewhat new to me. That said, I really enjoyed it and would like to keep building more experience in this area.
 
 ---
 
-## ✅ Tasks
+### 🎨 Frontend
 
-The app is **fully working** out of the box — once you run `npm start` you'll see a basic task manager in your browser connected to a live Express backend. Your job is to extend it.
+On the frontend, I...
 
-### Part 1 — Backend (Express + Node.js) ~45 mins
+* Added a personal title and today's date in a Header, along with a `ProgressBar` component showing both a visual bar and a fraction counter (_not asked but I thought this was fun!_)
+* Added a custom checkbox component to toggle task completion
+* Created colour-coded badge component: red for high, amber for medium, green for low
+* Displayed due dates via a DueDateBadge component with a calendar icon and locale-formatted date
+* Implemented a priority selector and date picker when creating or editing tasks
+* Moved task creation and editing into a single reusable TaskFormModal, with a separate
+* `DeleteConfirmModal` for destructive actions
+* Added a `FilterBar` with tab-based completion filters (All / Active / Done) and a priority dropdown, feeding query parameters directly to the API
+* Built a dedicated API layer (`src/api.ts`) with a shared handleResponse utility for consistent error handling across all fetch calls
+* Defined shared TypeScript types (`src/types.ts`) used across both frontend and backend, including derived types like NewTask and UpdateTask to prevent accidental mutation of id or createdAt
 
-Open `server/index.ts`. The four core routes are already implemented. Now make them better:
-
-- Add a `priority` field (`low` / `medium` / `high`) to tasks
-- Add a query param to filter tasks: `GET /api/tasks?priority=high` or `?completed=true`
-- Improve validation — what should happen if someone sends an empty title?
-- Add any other fields or endpoints you think would be useful
-
-> 💡 **Tip:** The `Task` interface and in-memory store are defined at the top of the file — extend them from there.
-
----
-
-### Part 2 — Frontend (React + TypeScript) ~45 mins
-
-Open `src/App.tsx`. The basic UI renders tasks and connects to the API. Make it genuinely useful:
-
-- Show task priority visually (colour, badge, icon — your choice)
-- Add a priority selector when creating a task
-- Add filtering or sorting (e.g. show only completed, sort by priority)
-- Improve the styling — make it look like something you'd actually want to use
-
-**Requirements:**
-- Use TypeScript properly — no `any` types please!
-- Keep using the types in `src/types.ts` — extend them if needed
-- Keep API calls going through `src/api.ts`
-
-> 💡 **Tip:** Feel free to create new component files under `src/` — you're not limited to `App.tsx`.
+I also spent time on overall styling and layout to make the app feel polished: responsive design with a mobile-first approach, a `Header` showing the current date, and consistent use of Tailwind utility classes throughout.
 
 ---
 
-### Part 3 — Your Call (~30 mins)
+### ⏳ If I Had More Time
 
-Pick **one** of the following, or come up with your own idea:
-
-- **Optimistic UI updates** — update the UI before the server responds, roll back on error
-- **Persistence** — save tasks to `localStorage` so they survive a page refresh
-- **Filtering UI** — a proper filter bar (All / Active / Completed / by Priority)
-- **Something else entirely** — surprise us! Just tell us what and why in your `NOTES.md`
-
----
-
-## 🚀 Getting Started
-
-```bash
-# 1. Switch to the correct Node version (requires nvm)
-nvm install   # installs 22.22.0 from .nvmrc
-nvm use       # switches to 22.22.0
-
-# 2. Install dependencies
-npm install
-
-# 3. Run both frontend and backend together
-npm start
-```
-
-This will start:
-- **Frontend** (React + Vite) at `http://localhost:5173`
-- **Backend** (Express) at `http://localhost:3001`
-
-Or run them separately in two terminals:
-
-```bash
-# Terminal 1 — backend
-npm run server
-
-# Terminal 2 — frontend
-npm run dev
-```
-
-> ⚠️ **Node version:** This project requires **Node 22.22.0**. The `.nvmrc` file handles this automatically if you use [nvm](https://github.com/nvm-sh/nvm). If you use a different version manager (volta, asdf, fnm), a `.node-version` file is also included.
+I already took a lot more time than the 2h suggested but if I had EVEN MORE time, I would...
+* Add sorting (by priority and due date) via a select input to be consistent with the existing filter UI
+* Implement optimistic UI updates for a smoother experience on toggle/delete
+* Persist tasks using localStorage or (even better) a database
+* Add some unit tests for key components and API logic to validate my changes but also to guard against any future regressions
+* Maybe also add some pagination in case we get thousands of tasks, which would otherwise put unnecessary strain on the database and impact performance.
+* Thanks to Tailwind and HeadlessUI it is relatively responsive, but I could spend more time ensuring the experience on small screens (like a phone or tablet) is just as good as it is on desktop
 
 ---
 
-## 📝 Please Create a NOTES.md File
+### 🔧 Improvements
 
-When you're done, add a `NOTES.md` to the root with a few sentences covering:
+* Maybe I could refactor a bit further for better separation of concerns and reusability and also improve accessibility (keyboard navigation, form interactions).
+* The state management could also be improved as currently all state lives in App.tsx, so I think extracting it into a custom hook or context would make the app easier to scale in the future.
 
-1. What you built and any decisions you made
-2. What you'd improve with more time
-3. Anything you found tricky or interesting
-
-This helps us understand your thinking — it's just as important as the code!
 
 ---
-
-## 📦 Submitting
-
-Push your completed code to a **public GitHub repository** and send us the link.
-
-Good luck — we're rooting for you! 🎉
-# tf-react-tech-test
