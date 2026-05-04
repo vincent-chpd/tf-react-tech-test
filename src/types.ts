@@ -16,3 +16,12 @@ export type NewTask = Omit<Task, 'id' | 'createdAt'>;
 
 // Used when updating a task
 export type UpdateTask = Partial<Omit<Task, 'id' | 'createdAt'>>;
+
+export type CompletedFilter = 'all' | 'todo' | 'done';
+
+export interface FilterBarProps {
+  completedFilter: CompletedFilter;
+  priorityFilter: Priority | '';
+  onCompletedFilterChange: (filter: CompletedFilter) => void;
+  onPriorityFilterChange: (priority: Priority | '') => void;
+}

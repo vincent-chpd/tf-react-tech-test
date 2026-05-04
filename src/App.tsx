@@ -3,20 +3,27 @@
 // You're welcome to split this into multiple components if you'd like!
 
 import { useState, useEffect } from 'react';
-import { Task } from './types';
-import { getTasks, createTask, updateTask, deleteTask } from './api';
+import { Task, Priority, CompletedFilter } from './types';
+import { getTasks, updateTask, deleteTask } from './api';
+import { Button } from '@headlessui/react';
+import Header from './components/Header';
+import FilterBar from './components/FilterBar';
+import TaskCard from './components/TaskCard';
+import AddTaskModal from './components/AddTaskModal';
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
+  const [completedFilter, setCompletedFilter] = useState<CompletedFilter>('all');
+  const [priorityFilter, setPriorityFilter] = useState<Priority | ''>('');
 
-  // Fetch tasks on mount
   useEffect(() => {
     void (async () => {
       try {
-        const data = await getTasks({priority: undefined, completed: undefined});
+        const completed = completedFilter === 'all' ? undefined : completedFilter === 'done';
+        const data = await getTasks({ priority: priorityFilter || undefined, completed });
         setTasks(data);
       } catch {
         setError('Failed to load tasks');
@@ -24,19 +31,16 @@ function App() {
         setLoading(false);
       }
     })();
-  }, []);
-
-  // TODO: Customise this — add priority, due dates, or anything else you like!
-  const handleAddTask = async () => {
-    if (!newTaskTitle.trim()) return;
-    const task = await createTask({ title: newTaskTitle, completed: false });
-    setTasks((prev) => [...prev, task]);
-    setNewTaskTitle('');
-  };
+  }, [completedFilter, priorityFilter]);
 
   // TODO: Expand this if you add extra fields to update
   const handleToggleComplete = async (task: Task) => {
     const updated = await updateTask(task.id, { completed: !task.completed });
+    setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+  };
+
+  const handleUpdateTask = async (id: string, updates: { title: string; priority?: Task['priority'] }) => {
+    const updated = await updateTask(id, updates);
     setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
   };
 
@@ -46,24 +50,49 @@ function App() {
     setTasks((prev) => prev.filter((t) => t.id !== id));
   };
 
+
   if (loading) return <p>Loading tasks...</p>;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: 24 }}>
-      <h1>Task Manager</h1>
+    <div className="min-h-screen py-12 px-4">
+    <div className="flex flex-col max-w-3xl mx-auto gap-3">
 
-      {/* TODO: Improve this input — add priority, labels, due date, etc. */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-        <input
-          type="text"
-          value={newTaskTitle}
-          onChange={(e) => setNewTaskTitle(e.target.value)}
-          placeholder="Add a new task..."
+      <div className="flex justify-between items-center bg-white rounded-2xl shadow-sm px-8 py-6">
+        <Header
+          title={'Good Morning, Jonny! 👋'}
+          totalTasks={tasks.length}
+          completedTasks={tasks.filter((t) => t.completed).length}
         />
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleAddTask}>
-          Add
-        </button>
+        <Button
+          className="rounded-md px-4 py-2 cursor-pointer font-medium text-sm"
+          style={{ backgroundColor: '#ffa607', color: '#000' }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#e69400')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#ffa607')}
+          onClick={ () => {setIsAddTaskModalOpen(true)} }
+        >
+          + Add New Task
+        </Button>
+        <AddTaskModal
+          isOpen={isAddTaskModalOpen}
+          onClose={() => setIsAddTaskModalOpen(false)}
+          onTaskAdded={(task) => setTasks((prev) => [...prev, task])}
+        />
+      </div>
+
+    <div className="flex flex-col gap-6 bg-white rounded-2xl shadow-sm px-8 py-6">
+
+      <h2 className="text-2xl font-bold">My Tasks</h2>
+
+
+
+      <div>
+        <FilterBar
+          completedFilter={completedFilter}
+          priorityFilter={priorityFilter}
+          onCompletedFilterChange={setCompletedFilter}
+          onPriorityFilterChange={setPriorityFilter}
+        />
       </div>
 
       {/* TODO: Style this list — make it your own! */}
@@ -72,18 +101,12 @@ function App() {
       ) : (
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {tasks.map((task) => (
-            <li key={task.id} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
-              <span style={{ textDecoration: task.completed ? 'line-through' : 'none', flex: 1 }}>
-                {task.title}
-              </span>
-              <button onClick={() => handleToggleComplete(task)}>
-                {task.completed ? 'Undo' : 'Complete'}
-              </button>
-              <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
-            </li>
+            <TaskCard key={task.id} task={task} handleToggleComplete={handleToggleComplete} handleDeleteTask={handleDeleteTask} handleUpdateTask={handleUpdateTask} />
           ))}
         </ul>
       )}
+      </div>
+    </div>
     </div>
   );
 }
