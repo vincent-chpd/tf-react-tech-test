@@ -2,14 +2,16 @@
 // This is your starting point. Build out the UI here.
 // You're welcome to split this into multiple components if you'd like!
 
-import { useState, useEffect } from 'react';
-import { Task, Priority, CompletedFilter } from './types';
-import { getTasks, updateTask, deleteTask } from './api';
+import { useState, useEffect, useMemo } from 'react';
+import { Task, Priority, CompletedFilter, TaskFormValues } from './types';
+import { getTasks, updateTask, deleteTask, createTask } from './api';
 import { Button } from '@headlessui/react';
 import Header from './components/Header';
 import FilterBar from './components/FilterBar';
 import TaskCard from './components/TaskCard';
-import AddTaskModal from './components/AddTaskModal';
+import TaskFormModal from './components/TaskFormModal';
+import ProgressBar from './components/ProgressBar';
+
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -23,7 +25,7 @@ function App() {
     void (async () => {
       try {
         const completed = completedFilter === 'all' ? undefined : completedFilter === 'done';
-        const data = await getTasks({ priority: priorityFilter || undefined, completed });
+        const data = await getTasks({ priority: priorityFilter, completed });
         setTasks(data);
       } catch {
         setError('Failed to load tasks');
@@ -33,80 +35,79 @@ function App() {
     })();
   }, [completedFilter, priorityFilter]);
 
-  // TODO: Expand this if you add extra fields to update
   const handleToggleComplete = async (task: Task) => {
     const updated = await updateTask(task.id, { completed: !task.completed });
-    setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+    setTasks((prev) => prev.map((task) => (task.id === updated.id ? updated : task)));
   };
 
-  const handleUpdateTask = async (id: string, updates: { title: string; priority?: Task['priority'] }) => {
+  const handleUpdateTask = async (id: string, updates: { title: string; priority?: Priority }) => {
     const updated = await updateTask(id, updates);
-    setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+    setTasks((prev) => prev.map((task) => (task.id === updated.id ? updated : task)));
   };
 
-  // TODO: Add a confirmation step, or an undo feature if you like!
   const handleDeleteTask = async (id: string) => {
     await deleteTask(id);
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+    setTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
+  const handleCreateTask = async ({ title, priority }: TaskFormValues ) => {
+    const task = await createTask({ title, completed: false, priority });
+    setTasks((prev) => [...prev, task]);
+  };
 
   if (loading) return <p>Loading tasks...</p>;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
-    <div className="min-h-screen py-12 px-4">
-    <div className="flex flex-col max-w-3xl mx-auto gap-3">
+    <div className="min-h-screen py-6 sm:py-12 px-3 sm:px-4">
+      <div className="flex flex-col max-w-3xl mx-auto gap-3">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-white rounded-2xl shadow-sm px-4 sm:px-8 py-6">
+          <Header title="Hello, Jonny! 👋" />
+          <Button
+            className="rounded-md px-4 py-2 cursor-pointer font-medium text-sm bg-amber-400 text-gray-900 hover:bg-amber-500 focus:outline-none"
+            onClick={() => setIsAddTaskModalOpen(true)}
+          >
+            + Add New Task
+          </Button>
+        </div>
+        <div className="flex flex-col gap-6 bg-white rounded-2xl shadow-sm px-4 sm:px-8 py-6">
+          <div className="flex flex-col justify-between gap-1">
+            <h2 className="text-2xl font-bold">My Tasks</h2>
+            <ProgressBar tasks={tasks}/>
+          </div>
 
-      <div className="flex justify-between items-center bg-white rounded-2xl shadow-sm px-8 py-6">
-        <Header
-          title={'Good Morning, Jonny! 👋'}
-          totalTasks={tasks.length}
-          completedTasks={tasks.filter((t) => t.completed).length}
-        />
-        <Button
-          className="rounded-md px-4 py-2 cursor-pointer font-medium text-sm"
-          style={{ backgroundColor: '#ffa607', color: '#000' }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#e69400')}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#ffa607')}
-          onClick={ () => {setIsAddTaskModalOpen(true)} }
-        >
-          + Add New Task
-        </Button>
-        <AddTaskModal
-          isOpen={isAddTaskModalOpen}
-          onClose={() => setIsAddTaskModalOpen(false)}
-          onTaskAdded={(task) => setTasks((prev) => [...prev, task])}
-        />
+          <FilterBar
+            completedFilter={completedFilter}
+            priorityFilter={priorityFilter}
+            onCompletedFilterChange={setCompletedFilter}
+            onPriorityFilterChange={setPriorityFilter}
+          />
+
+          {tasks.length === 0 ? (
+            <p>No tasks yet. Add one above!</p>
+          ) : (
+            <ul className="list-none p-0">
+              {tasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  handleToggleComplete={handleToggleComplete}
+                  handleDeleteTask={handleDeleteTask}
+                  handleUpdateTask={handleUpdateTask}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
 
-    <div className="flex flex-col gap-6 bg-white rounded-2xl shadow-sm px-8 py-6">
-
-      <h2 className="text-2xl font-bold">My Tasks</h2>
-
-
-
-      <div>
-        <FilterBar
-          completedFilter={completedFilter}
-          priorityFilter={priorityFilter}
-          onCompletedFilterChange={setCompletedFilter}
-          onPriorityFilterChange={setPriorityFilter}
-        />
-      </div>
-
-      {/* TODO: Style this list — make it your own! */}
-      {tasks.length === 0 ? (
-        <p>No tasks yet. Add one above!</p>
-      ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} handleToggleComplete={handleToggleComplete} handleDeleteTask={handleDeleteTask} handleUpdateTask={handleUpdateTask} />
-          ))}
-        </ul>
-      )}
-      </div>
-    </div>
+      <TaskFormModal
+        isOpen={isAddTaskModalOpen}
+        onClose={() => setIsAddTaskModalOpen(false)}
+        title="Add a new task"
+        submitLabel="Add task"
+        onSubmit={handleCreateTask}
+      />
     </div>
   );
 }

@@ -3,10 +3,3 @@
 body {
   background-color: #f3f4f6;
 }
-
-@theme {
-  --color-brand: #ffa607;
-  --color-brand-hover: #e69400;
-  --color-brand-light: #fff4e0;
-  --color-brand-ring: #ffa60766;
-}

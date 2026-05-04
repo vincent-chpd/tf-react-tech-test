@@ -88,7 +88,7 @@ app.post('/api/tasks', (req: Request, res: Response) => {
 // PATCH /api/tasks/:id — update a task
 app.patch('/api/tasks/:id', (req: Request, res: Response) => {
   const { id } = req.params;
-  const index = tasks.findIndex((t) => t.id === id);
+  const index = tasks.findIndex((task) => task.id === id);
 
   if (index === -1) {
     res.status(404).json({ error: `Task with id "${id}" not found` });
@@ -103,14 +103,14 @@ app.patch('/api/tasks/:id', (req: Request, res: Response) => {
 // DELETE /api/tasks/:id — delete a task
 app.delete('/api/tasks/:id', (req: Request, res: Response) => {
   const { id } = req.params;
-  const index = tasks.findIndex((t) => t.id === id);
+  const index = tasks.findIndex((task) => task.id === id);
 
   if (index === -1) {
     res.status(404).json({ error: `Task with id "${id}" not found` });
     return;
   }
 
-  tasks = tasks.filter((t) => t.id !== id);
+  tasks = tasks.filter((task) => task.id !== id);
   res.status(204).send();
 });
 

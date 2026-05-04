@@ -1,14 +1,8 @@
 import { Button, Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { Trash2 } from 'lucide-react';
+import { DeleteConfirmModalProps } from '../types';
 
-interface DeleteConfirmModalProps {
-  isOpen: boolean;
-  taskTitle: string;
-  onConfirm: () => void;
-  onCancel: () => void;
-}
-
-export default function DeleteConfirmModal({ isOpen, taskTitle, onConfirm, onCancel }: DeleteConfirmModalProps) {
+const DeleteConfirmModal = ({ isOpen, taskTitle, onConfirm, onCancel }: DeleteConfirmModalProps) => {
   return (
     <Dialog open={isOpen} as="div" className="relative z-10 focus:outline-none" onClose={onCancel}>
       <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-black/30 backdrop-blur-sm">
@@ -52,3 +46,5 @@ export default function DeleteConfirmModal({ isOpen, taskTitle, onConfirm, onCan
     </Dialog>
   );
 }
+
+export default DeleteConfirmModal;

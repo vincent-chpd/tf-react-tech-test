@@ -3,11 +3,15 @@ import { FilterBarProps, CompletedFilter, Priority } from '../types';
 
 const TABS: { label: string; value: CompletedFilter }[] = [
   { label: 'All', value: 'all' },
-  { label: 'Todo', value: 'todo' },
+  { label: 'Active', value: 'active' },
   { label: 'Done', value: 'done' },
 ];
 
 const FilterBar = ({ completedFilter, priorityFilter, onCompletedFilterChange, onPriorityFilterChange }: FilterBarProps) => {
+  const handlePriorityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onPriorityFilterChange(e.target.value as Priority);
+  };
+
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex bg-gray-100 p-1 rounded-lg gap-0.5">
@@ -28,12 +32,12 @@ const FilterBar = ({ completedFilter, priorityFilter, onCompletedFilterChange, o
 
       <Select
         value={priorityFilter}
-        onChange={(e) => onPriorityFilterChange(e.target.value as Priority | '')}
+        onChange={handlePriorityChange}
         className="border border-gray-200 bg-white px-3 py-1.5 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent cursor-pointer"
       >
         <option value="">All priorities</option>
         <option value="high">High</option>
-        <option value="medium">Med</option>
+        <option value="medium">Medium</option>
         <option value="low">Low</option>
       </Select>
     </div>
