@@ -40,7 +40,7 @@ function App() {
     setTasks((prev) => prev.map((task) => (task.id === updated.id ? updated : task)));
   };
 
-  const handleUpdateTask = async (id: string, updates: { title: string; priority?: Priority }) => {
+  const handleUpdateTask = async (id: string, updates: { title: string; priority?: Priority; dueDate?: string }) => {
     const updated = await updateTask(id, updates);
     setTasks((prev) => prev.map((task) => (task.id === updated.id ? updated : task)));
   };
@@ -50,8 +50,8 @@ function App() {
     setTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
-  const handleCreateTask = async ({ title, priority }: TaskFormValues ) => {
-    const task = await createTask({ title, completed: false, priority });
+  const handleCreateTask = async ({ title, priority, dueDate }: TaskFormValues) => {
+    const task = await createTask({ title, completed: false, priority, dueDate });
     setTasks((prev) => [...prev, task]);
   };
 

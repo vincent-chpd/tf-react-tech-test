@@ -8,7 +8,8 @@ export interface Task {
   title: string;
   completed: boolean;
   createdAt: string;
-  priority?: Priority; // Bonus field - optional
+  priority?: Priority;
+  dueDate?: string;
 }
 
 // Used when creating a new task (no id or createdAt yet)
@@ -36,6 +37,7 @@ export interface DeleteConfirmModalProps {
 export interface TaskFormValues {
   title: string;
   priority?: Priority;
+  dueDate?: string;
 }
 
 export interface TaskFormModalProps {
@@ -51,5 +53,5 @@ export interface TaskCardProps {
   task: Task;
   handleToggleComplete: (task: Task) => void;
   handleDeleteTask: (id: string) => void;
-  handleUpdateTask: (id: string, updates: { title: string; priority?: Priority }) => Promise<void>;
+  handleUpdateTask: (id: string, updates: { title: string; priority?: Priority; dueDate?: string }) => Promise<void>;
 }

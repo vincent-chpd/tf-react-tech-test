@@ -1,40 +1,45 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import { Button, Dialog, DialogPanel, DialogTitle, Field, Input, Select } from '@headlessui/react';
 import { Priority, TaskFormModalProps } from '../types';
+import { CalendarDays } from 'lucide-react';
 import { ListTodo } from 'lucide-react';
 
 const TaskFormModal = ({ isOpen, onClose, onSubmit, title, submitLabel, initialValues }: TaskFormModalProps) => {
   const [taskTitle, setTaskTitle] = useState<string | undefined>(initialValues?.title);
   const [priority, setPriority] = useState<Priority | undefined>(initialValues?.priority);
-  const [errors, setErrors] = useState<{ title?: string; priority?: string } | undefined>(undefined);
+  const [dueDate, setDueDate] = useState<string | undefined>(initialValues?.dueDate);
+  const [errors, setErrors] = useState<{ title?: string; priority?: string; dueDate?: string } | undefined>(undefined);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setTaskTitle(initialValues?.title);
       setPriority(initialValues?.priority);
+      setDueDate(initialValues?.dueDate);
       setErrors(undefined);
     }
-  }, [isOpen, initialValues?.title, initialValues?.priority]);
+  }, [isOpen, initialValues?.title, initialValues?.priority, initialValues?.dueDate]);
 
   const handleClose = () => {
     setTaskTitle(undefined);
     setPriority(undefined);
+    setDueDate(undefined);
     setErrors(undefined);
     onClose();
   };
 
   const handleSubmit = async () => {
-    const newErrors: { title?: string; priority?: string } = {};
+    const newErrors: { title?: string; priority?: string; dueDate?: string } = {};
     if (!taskTitle?.trim()) newErrors.title = 'Title is required';
     if (!priority) newErrors.priority = 'Priority is required';
+    if (!dueDate ) newErrors.dueDate = 'Due date is required';
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
     setSubmitting(true);
     try {
-      await onSubmit({ title: taskTitle?.trim() || '', priority: priority });
+      await onSubmit({ title: taskTitle?.trim() || '', priority, dueDate: dueDate || undefined });
       handleClose();
     } finally {
       setSubmitting(false);
@@ -49,6 +54,11 @@ const TaskFormModal = ({ isOpen, onClose, onSubmit, title, submitLabel, initialV
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTaskTitle(e.target.value);
     if (errors?.title) setErrors((prev) => ({ ...prev, title: undefined }));
+  }
+
+  const handleDueDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setDueDate(e.target.value);
+    if (errors?.dueDate) setErrors((prev) => ({ ...prev, dueDate: undefined }));
   }
 
   return (
@@ -89,6 +99,16 @@ const TaskFormModal = ({ isOpen, onClose, onSubmit, title, submitLabel, initialV
                   <option value="high">High</option>
                 </Select>
                 {errors?.priority && <p className="text-red-500 text-xs mt-1">{errors.priority}</p>}
+              </div>
+              <div className="relative">
+                <CalendarDays className="absolute left-3 top-5 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <Input
+                  type="date"
+                  value={dueDate}
+                  onChange={handleDueDateChange}
+                  className="w-full border border-gray-200 pl-9 pr-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent text-gray-700"
+                />
+                {errors?.dueDate && <p className="text-red-500 text-xs mt-1">{errors.dueDate}</p>}
               </div>
             </Field>
 

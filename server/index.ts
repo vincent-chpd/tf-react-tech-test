@@ -28,6 +28,7 @@ interface Task {
   completed: boolean;
   createdAt: string;
   priority?: Priority;
+  dueDate?: string;
 }
 
 // ─── In-memory store ──────────────────────────────────────────────────────────
@@ -38,7 +39,7 @@ let tasks: Task[] = [];
 
 // GET /api/tasks — return all tasks
 app.get('/api/tasks', (req: Request, res: Response) => {
-  const { priority, completed } = req.query;
+  const { priority, completed, dueDate } = req.query;
 
   if (priority !== undefined && priority !== 'low' && priority !== 'medium' && priority !== 'high') {
     res.status(400).json({ error: 'Priority must be low, medium, or high.' });
@@ -47,6 +48,11 @@ app.get('/api/tasks', (req: Request, res: Response) => {
 
   if (completed !== undefined && completed !== 'true' && completed !== 'false') {
     res.status(400).json({ error: 'Completed must be true or false.' });
+    return;
+  }
+
+  if(dueDate !== undefined && isNaN(Date.parse(String(dueDate)))) {
+    res.status(400).json({ error: 'Due date must be a valid date string.' });
     return;
   }
 
@@ -61,15 +67,30 @@ app.get('/api/tasks', (req: Request, res: Response) => {
     filteredTasks = filteredTasks.filter(task => task.completed === completedBoolean);
   }
 
+  if (dueDate !== undefined) {
+    const dueDateObj = new Date(String(dueDate));
+    filteredTasks = filteredTasks.filter(task => task.dueDate && new Date(task.dueDate) <= dueDateObj);
+  }
+
   res.json(filteredTasks);
 });
 
 // POST /api/tasks — create a new task
 app.post('/api/tasks', (req: Request, res: Response) => {
-  const { title, priority } = req.body as { title?: string; priority?: Priority };
+  const { title, priority, dueDate } = req.body as { title?: string; priority?: Priority; dueDate?: string };
 
   if (!title || typeof title !== 'string' || title.trim() === '') {
     res.status(400).json({ error: 'title is required and must be a non-empty string' });
+    return;
+  }
+
+  if (priority !== undefined && priority !== 'low' && priority !== 'medium' && priority !== 'high') {
+    res.status(400).json({ error: 'Priority must be low, medium, or high.' });
+    return;
+  }
+
+  if (dueDate !== undefined && isNaN(Date.parse(dueDate))) {
+    res.status(400).json({ error: 'Due date must be a valid date string.' });
     return;
   }
 
@@ -79,6 +100,7 @@ app.post('/api/tasks', (req: Request, res: Response) => {
     completed: false,
     createdAt: new Date().toISOString(),
     ...(priority && { priority }),
+    ...(dueDate && { dueDate }),
   };
 
   tasks.push(newTask);
