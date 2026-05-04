@@ -84,7 +84,11 @@ function App() {
           />
 
           {tasks.length === 0 ? (
-            <p>Nothing here yet! <br/> Click on <strong>Add New Task</strong> above to add your first task.🎯</p>
+            <p>
+              {completedFilter === 'active' && <>All caught up! No active tasks remaining. ✅</>}
+              {completedFilter === 'done' && <>Nothing completed yet, get to work! 💪</>}
+              {completedFilter === 'all' && <>No tasks to show! <br/> Click on <strong>Add New Task</strong> above to add your first task. 🎯</>}
+            </p>
           ) : (
             <ul className="list-none p-0">
               {tasks.map((task) => (
