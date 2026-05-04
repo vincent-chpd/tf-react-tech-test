@@ -1,8 +1,9 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import { Button, Dialog, DialogPanel, DialogTitle, Field, Input, Select } from '@headlessui/react';
 import { Priority, TaskFormModalProps } from '../types';
-import { CalendarDays } from 'lucide-react';
+import { ArrowUpNarrowWide, CalendarDays } from 'lucide-react';
 import { ListTodo } from 'lucide-react';
+import PriorityBadge from './PriorityBadge';
 
 const TaskFormModal = ({ isOpen, onClose, onSubmit, title, submitLabel, initialValues }: TaskFormModalProps) => {
   const [taskTitle, setTaskTitle] = useState<string | undefined>(initialValues?.title);
@@ -94,9 +95,9 @@ const TaskFormModal = ({ isOpen, onClose, onSubmit, title, submitLabel, initialV
                   className={`w-full border px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent bg-white ${errors?.priority ? 'border-red-400' : 'border-gray-200'}`}
                 >
                   <option value="">Select priority</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
+                  <option className="text-green-600" value="low">● Low</option>
+                  <option className="text-amber-500" value="medium">● Medium</option>
+                  <option className="text-red-500" value="high">● High</option>
                 </Select>
                 {errors?.priority && <p className="text-red-500 text-xs mt-1">{errors.priority}</p>}
               </div>
