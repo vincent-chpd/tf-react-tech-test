@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { Task } from '../types';
+import { Task } from '../../types';
 
 const PriorityBadge = ({ task }: { task: Task }) => {
 

@@ -84,7 +84,7 @@ function App() {
           />
 
           {tasks.length === 0 ? (
-            <p>No tasks yet. Add one above!</p>
+            <p>Nothing here yet! <br/> Click on <strong>Add New Task</strong> above to add your first task.🎯</p>
           ) : (
             <ul className="list-none p-0">
               {tasks.map((task) => (

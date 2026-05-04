@@ -1,6 +1,11 @@
-const Header = ({ title }: { title: string }) => {
+import { formatOrdinal } from '../utils/formatOrdinal';
 
-  const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+const Header = ({ title }: { title: string }) => {
+  const now = new Date();
+  const weekday = now.toLocaleDateString('en-GB', { weekday: 'long' });
+  const day = formatOrdinal(now.getDate());
+  const monthYear = now.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  const today = `${weekday}, ${day} ${monthYear}`;
 
   return (
     <div className="flex flex-col gap-1">

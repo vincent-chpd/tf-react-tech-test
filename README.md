@@ -26,12 +26,11 @@ I did spend a bit more time on the backend than I probably should have. It’s n
 On the frontend, I...
 
 * Added a personal title and today's date in a Header, along with a `ProgressBar` component showing both a visual bar and a fraction counter (_not asked but I thought this was fun!_)
-* Added a custom checkbox component to toggle task completion
+* Added a custom checkbox component to toggle task completion, which I thought I thought improve the UX
 * Created colour-coded badge component: red for high, amber for medium, green for low
 * Displayed due dates via a DueDateBadge component with a calendar icon and locale-formatted date
 * Implemented a priority selector and date picker when creating or editing tasks
-* Moved task creation and editing into a single reusable TaskFormModal, with a separate
-* `DeleteConfirmModal` for destructive actions
+* Moved task creation and editing into a single reusable TaskFormModal, with a separate `DeleteConfirmModal` for destructive actions
 * Added a `FilterBar` with tab-based completion filters (All / Active / Done) and a priority dropdown, feeding query parameters directly to the API
 * Built a dedicated API layer (`src/api.ts`) with a shared handleResponse utility for consistent error handling across all fetch calls
 * Defined shared TypeScript types (`src/types.ts`) used across both frontend and backend, including derived types like NewTask and UpdateTask to prevent accidental mutation of id or createdAt
@@ -44,8 +43,8 @@ I also spent time on overall styling and layout to make the app feel polished: r
 
 I already took a lot more time than the 2h suggested but if I had EVEN MORE time, I would...
 * Add sorting (by priority and due date) via a select input to be consistent with the existing filter UI
-* Implement optimistic UI updates for a smoother experience on toggle/delete
-* Persist tasks using localStorage or (even better) a database
+* Implement optimistic UI updates for a smoother experience on toggle/delete, although given the API runs locally with almost no latency, I didn't feel it was necessary here...
+* Persist tasks to avoid data loss on server restart (The data can already survive a page refresh as it is stored in-memory on the backend). I initially looked into using `localStorage` for this, but after some research I realised it wouldn't work here: since tasks are stored in memory on the backend, `localStorage` (which only exists in the browser) can't help. The right solution would be to persist to a JSON file or a proper database on the server side
 * Add some unit tests for key components and API logic to validate my changes but also to guard against any future regressions
 * Maybe also add some pagination in case we get thousands of tasks, which would otherwise put unnecessary strain on the database and impact performance.
 * Thanks to Tailwind and HeadlessUI it is relatively responsive, but I could spend more time ensuring the experience on small screens (like a phone or tablet) is just as good as it is on desktop

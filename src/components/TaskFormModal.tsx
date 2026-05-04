@@ -1,9 +1,8 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import { Button, Dialog, DialogPanel, DialogTitle, Field, Input, Select } from '@headlessui/react';
 import { Priority, TaskFormModalProps } from '../types';
-import { ArrowUpNarrowWide, CalendarDays } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import { ListTodo } from 'lucide-react';
-import PriorityBadge from './PriorityBadge';
 
 const TaskFormModal = ({ isOpen, onClose, onSubmit, title, submitLabel, initialValues }: TaskFormModalProps) => {
   const [taskTitle, setTaskTitle] = useState<string | undefined>(initialValues?.title);

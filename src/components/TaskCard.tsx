@@ -4,8 +4,8 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { Priority, TaskCardProps } from '../types';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import TaskFormModal from './TaskFormModal';
-import PriorityBadge from './PriorityBadge';
-import DueDateBadge from './DueDateBadge';
+import PriorityBadge from './ui/PriorityBadge';
+import DueDateBadge from './ui/DueDateBadge';
 import TaskCheckbox from './TaskCheckbox';
 
 const TaskCard = ({ task, handleToggleComplete, handleDeleteTask, handleUpdateTask }: TaskCardProps) => {
