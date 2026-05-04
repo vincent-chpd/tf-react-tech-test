@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
+import { Task } from '../types';
 
-const ProgressBar = ({ tasks }: { tasks: any[] }) => {
+const ProgressBar = ({ tasks }: { tasks: Task[] }) => {
   const completedTasks = tasks.filter((task) => task.completed).length;
 
   const progress = useMemo(() => {
